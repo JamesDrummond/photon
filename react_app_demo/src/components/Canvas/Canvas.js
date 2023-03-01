@@ -8,7 +8,7 @@ class Canvas extends React.Component {
       count: 0,
       loadedWasm: false,
       isLoaded: false,
-      wasm: null,
+      qrcode: null,
       img: null
     };
   }
@@ -35,9 +35,9 @@ class Canvas extends React.Component {
   loadWasm = async () => {
 
     try {
-      const photon = await import('@silvia-odwyer/photon');
+      const qrcode = await import('qrcode-wasm-jd');
 
-      this.wasm = photon;
+      this.qrcode = qrcode;
 
       this.drawOriginalImage();
 
@@ -55,16 +55,18 @@ class Canvas extends React.Component {
     
     ctx.drawImage(this.img, 0, 0);
 
-    let photon = this.wasm;
+    let qrcode = this.qrcode;
 
+    console.time("PHOTON_ALTER_CHANNEL");
     // Convert the canvas and context to a PhotonImage
-    let image = photon.open_image(canvas1, ctx);
+    let image = qrcode.open_image_pass(canvas1, ctx);
 
     // Filter the image
-    photon.alter_channel(image, channel_index, 50);
+    qrcode.alter_channel_pass(image, channel_index, 50);
+    console.timeEnd("PHOTON_ALTER_CHANNEL");
 
     // Replace the current canvas' ImageData with the new image's ImageData.
-    photon.putImageData(canvas1, ctx, image);
+    qrcode.putImageData_pass(canvas1, ctx, image);
 
   }
 
@@ -74,22 +76,16 @@ class Canvas extends React.Component {
     
     ctx.drawImage(this.img, 0, 0);
 
-    let photon = this.wasm;
-    let phtimg = photon.open_image(canvas1, ctx);
+    let qrcode = this.qrcode;
+    let phtimg = qrcode.open_image_pass(canvas1, ctx);
 
     console.time("PHOTON_WITH_RAWPIX");
-    photon.alter_channel(phtimg, 2, 70);
-    photon.grayscale(phtimg);
+    qrcode.alter_channel_pass(phtimg, 2, 70);
+    qrcode.grayscale_pass(phtimg);
     console.timeEnd("PHOTON_WITH_RAWPIX");
 
     // // Replace the current canvas' ImageData with the new image's ImageData.
-    photon.putImageData(canvas1, ctx, phtimg);
-
-
-
-    console.time("PHOTON_CONSTR");
-    // photon.canvas_wasm_only(canvas1, ctx);
-    console.timeEnd("PHOTON_CONSTR");
+    qrcode.putImageData_pass(canvas1, ctx, phtimg);
   }
   
   render() {

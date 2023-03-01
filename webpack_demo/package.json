@@ -5,7 +5,7 @@
   "repository": "https://github.com/silvia-odwyer/photon",
   "license": "Apache-2.0",
   "scripts": {
-    "start": "webpack-dev-server -d",
+    "start": "webpack-dev-server -d --port 8084",
     "build": "webpack"
   },
   "bin": {
