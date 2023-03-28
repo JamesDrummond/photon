@@ -1,5 +1,5 @@
 import React from 'react';
-import img_src from './daisies.jpg';
+import img_src from './test1.jpg';
 
 class Canvas extends React.Component {
   constructor(props) {
@@ -32,13 +32,27 @@ class Canvas extends React.Component {
     img.src = img_src;
   }
 
+  drawNewImage = async () => {
+    const img = new Image();
+
+    img.onload = () => {
+      this.img = img;
+      const canvas = this.refs.canvas;
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      
+      ctx.drawImage(img, 0, 0);
+
+    }
+    img.src = img_src;
+  }
+
   loadWasm = async () => {
 
     try {
-      const qrcode = await import('qrcode-wasm-jd');
-
+      const qrcode = await import('qrcode-wasm');
       this.qrcode = qrcode;
-
       this.drawOriginalImage();
 
     } finally {
@@ -50,23 +64,43 @@ class Canvas extends React.Component {
   }
   
   alterChannel = async (channel_index) => {
+    console.time("PHOTON_WITH_RAWPIX");
     const canvas1 = this.refs.canvas;
     const ctx = canvas1.getContext("2d");
     
     ctx.drawImage(this.img, 0, 0);
 
     let qrcode = this.qrcode;
+    // let image = qrcode.open_image_pass(canvas1, ctx);
+    // qrcode.alter_channel_pass(image, channel_index, 50);
+    // qrcode.putImageData_pass(canvas1, ctx, image);
+    canvas1.toBlob(blob => {
+      const reader = new FileReader();
+  
+      reader.addEventListener("loadend", () => {
+        const arrayBuffer = reader.result;
+        const output = qrcode.decode_qr(new Uint8Array(arrayBuffer));
+        console.log("output of decode_qr:", output);
+      });
+      reader.readAsArrayBuffer(blob);
+    });
+    console.timeEnd("PHOTON_WITH_RAWPIX");
 
-    console.time("PHOTON_ALTER_CHANNEL");
-    // Convert the canvas and context to a PhotonImage
-    let image = qrcode.open_image_pass(canvas1, ctx);
+    // console.time("QRCODE_DECODE");
+    // let result = qrcode.get_qrcode(canvas1, ctx, canvas1, ctx);
+    // console.time("QRCODE_DECODE");
+    // console.log("QRCODE_DECODE_RESULT: " + result);
 
-    // Filter the image
-    qrcode.alter_channel_pass(image, channel_index, 50);
-    console.timeEnd("PHOTON_ALTER_CHANNEL");
+    // console.time("PHOTON_ALTER_CHANNEL");
+    // // Convert the canvas and context to a PhotonImage
+    // let image = qrcode.open_image_pass(canvas1, ctx);
 
-    // Replace the current canvas' ImageData with the new image's ImageData.
-    qrcode.putImageData_pass(canvas1, ctx, image);
+    // // Filter the image
+    // qrcode.alter_channel_pass(image, channel_index, 50);
+    // console.timeEnd("PHOTON_ALTER_CHANNEL");
+
+    // // Replace the current canvas' ImageData with the new image's ImageData.
+    // qrcode.putImageData_pass(canvas1, ctx, image);
 
   }
 

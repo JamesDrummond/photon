@@ -32,6 +32,7 @@ console_error_panic_hook = { version = "0.1.6", optional = true }
 wee_alloc = { version = "0.4.5", optional = true }
 image = "0.24.5"
 photon-rs = "0.3.2"
+rqrr = "0.6.0"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"

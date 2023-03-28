@@ -5,7 +5,7 @@
   "dependencies": {
     "@silvia-odwyer/photon": "^0.1.0",
     "@silvia-odwyer/photon-node": "^0.1.0",
-    "qrcode-wasm-jd": "file:../qrcode-wasm/pkg",
+    "qrcode-wasm": "file:../qrcode_wasm/pkg",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
